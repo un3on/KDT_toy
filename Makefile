@@ -1,26 +1,35 @@
+TARGET = toy
+
+SYSTEM = ./system
+UI = ./ui
+WEB_SERVER = ./web_server
+
+INCLUDES = -I$(SYSTEM) -I$(UI) -I$(WEB_SERVER)
+
 CC = gcc
-CFLAGS = -Wall
 
-SRC_DIRS = . ./system ./ui web_server
-
-SRCS = $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.c))
-OBJS = $(SRCS:.c=.o)
-
-INC_DIRS = $(foreach dir, $(SRC_DIRS), -I $(dir))
-
-TARGET_NAME = toy
-TARGET_PATH = ./bin
-TARGET = $(addprefix $(TARGET_PATH)/, $(TARGET_NAME))
-
-%.o: %.c
-	$(CC) $(CFLAGS) $(INC_DIRS) -c $< -o $@
-
-all: $(TARGET)
-
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(INC_DIRS) -o $@ $(OBJS)
-
+objects = main.o system_server.o web_server.o input.o gui.o
 
 .PHONY: clean
+
+$(TARGET): $(objects)
+	$(CC) -o $(TARGET) $(objects)
+
+main.o:  main.c
+	$(CC) -g $(INCLUDES) -c main.c
+
+system_server.o: $(SYSTEM)/system_server.h $(SYSTEM)/system_server.c
+	$(CC) -g $(INCLUDES) -c ./system/system_server.c
+
+gui.o: $(UI)/gui.h $(UI)/gui.c
+	$(CC) -g $(INCLUDES) -c $(UI)/gui.c
+
+input.o: $(UI)/input.h $(UI)/input.c
+	$(CC) -g $(INCLUDES) -c $(UI)/input.c
+
+web_server.o: $(WEB_SERVER)/web_server.h $(WEB_SERVER)/web_server.c
+	$(CC) -g $(INCLUDES) -c $(WEB_SERVER)/web_server.c
+
 clean:
-	rm -rf $(TARGET) $(OBJS)
+	rm -rf *.o
+	rm -rf $(TARGET)
