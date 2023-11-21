@@ -1,4 +1,4 @@
-TARGET = toy
+TARGET = toy_system
 
 SYSTEM = ./system
 UI = ./ui
